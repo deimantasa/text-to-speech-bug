@@ -52,9 +52,11 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: RaisedButton(
-                  child: Text(_isRecording ? "Stop" : "Start"),
-                  onPressed: () => _isRecording ? _stopRecording() : _startRecording()),
+              child: RaisedButton(child: Text("Start"), onPressed: () => _startRecording()),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: RaisedButton(child: Text("Stop"), onPressed: () => _stopRecording()),
             ),
             Text("${_speechToText.lastRecognizedWords}"),
           ],
@@ -73,7 +75,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void _startRecording() {
     setState(() {
       _isRecording = true;
-      _speechToText.listen(onResult: (result) => print("Result: ${result.toString()}"));
+      _speechToText.listen(
+        listenFor: Duration(seconds: 60),
+        onResult: (result) => print("Result: ${result.toString()}"),
+      );
     });
   }
 }
