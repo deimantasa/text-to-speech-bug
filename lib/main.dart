@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -32,7 +34,16 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     _speechToText.initialize(
-      onError: (error) => print("Error: ${error.toString()}"),
+      onError: (error) {
+        print("Error: ${error.toString()}");
+
+        if (Platform.isAndroid) {
+          if (error.errorMsg == 'error_speech_timeout') {
+            _stopRecording();
+            _startRecording();
+          }
+        }
+      },
       onStatus: (status) => print("Status: $status"),
       debugLogging: true,
     );
@@ -66,16 +77,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _stopRecording() {
-    setState(() {
-      _isRecording = false;
-      _speechToText.cancel();
-    });
+    _isRecording = false;
+    _speechToText.cancel();
+    setState(() {});
   }
 
   void _startRecording() {
     setState(() {
       _isRecording = true;
       _speechToText.listen(
+        partialResults: true,
         listenFor: Duration(seconds: 60),
         onResult: (result) => print("Result: ${result.toString()}"),
       );
